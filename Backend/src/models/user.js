@@ -1,10 +1,17 @@
 const { DataTypes } = require("sequelize")
 
+const phoneValidation = /\d{3}-\d{3}-\d{4}/
+
 const User = (sequelize) => {
     return sequelize.define("User", {
-        username: {
+        phoneNum: {
             type: DataTypes.STRING,
             allowNull: false,
+            validate:{
+                validator: function(v){
+                    return phoneValidation.test(v)
+                }
+            }
         },
         email: {
             type: DataTypes.STRING,

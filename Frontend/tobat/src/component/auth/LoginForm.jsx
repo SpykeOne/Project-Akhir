@@ -16,7 +16,8 @@ import {
     InputRightAddon,
     FormHelperText,
     HStack,
-    Image
+    Image,
+    Divider
   } from "@chakra-ui/react";
 
 import { useState } from "react";
@@ -24,11 +25,12 @@ import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
 import { useFormik } from "formik"
 import * as Yup from "yup"
-import { userLogin } from "../redux/action/user/userLogin";
+import { userLogin } from "../../redux/action/user/userLogin";
 import { useEffect } from "react";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 
-  export default function loginForm(){
+  export default function LoginForm(){
     const [viewPassword, setViewPassword] = useState(false)
 
     const userSelector = useSelector((state)=> state.auth)
@@ -37,12 +39,12 @@ import { useEffect } from "react";
 
     const formik = useFormik({
       initialValues: {
-        username: "",
+        phoneNum: "",
         email: "",
         password:""
       },
       validationSchema: Yup.object().shape({
-        usermail: Yup.string().required("Email/Username needs to be filled"),
+        mailphone: Yup.string().required("Email/Phone Number needs to be filled"),
         password: Yup.string().required("Password needs to be filled"),
       }),
       validateOnChange: false,
@@ -53,7 +55,7 @@ import { useEffect } from "react";
 
     useEffect(()=> {
       if (userSelector?.id) {
-        router.push("/home")
+        router.push("/homepage")
       }
     }, [userSelector.id])
 
@@ -72,8 +74,8 @@ import { useEffect } from "react";
           <Box rounded={"lg"} bg={useColorModeValue("white", "gray.700")}
           boxShadow={"lg"} p={8}>
             <Stack spacing={4}>
-            <FormControl id="email" isInvalid={formik.errors.usermail}>
-                      <FormLabel>Email/Username</FormLabel>
+            <FormControl id="email" isInvalid={formik.errors.mailphone}>
+                      <FormLabel>Email/PhoneNumber</FormLabel>
 
                       <Input
                         type="email"
@@ -87,7 +89,7 @@ import { useEffect } from "react";
                       <FormLabel>Password</FormLabel>
                       <InputGroup>
                         <Input
-                          type={passwordView ? "text" : "password"}
+                          type={viewPassword ? "text" : "password"}
                           onChange={(event) =>
                             formik.setFieldValue("password", event.target.value)
                           }
@@ -96,8 +98,8 @@ import { useEffect } from "react";
                         <InputRightAddon>
                           <Icon
                             fontSize="xl"
-                            onClick={() => setPasswordView(!passwordView)}
-                            as={passwordView ? IoMdEye : IoMdEyeOff}
+                            onClick={() => setViewPassword(!viewPassword)}
+                            as={viewPassword ? IoMdEye : IoMdEyeOff}
                             sx={{ _hover: { cursor: "pointer" } }}
                           />
                         </InputRightAddon>
@@ -121,6 +123,7 @@ import { useEffect } from "react";
                       </Button>
                     </Stack>
             </Stack>
+            <Divider>Or</Divider>
           </Box>
           
           <Box rounded={"lg"} bg={useColorModeValue("white", "gray.700")} boxShadow={"lg"} p={8}>

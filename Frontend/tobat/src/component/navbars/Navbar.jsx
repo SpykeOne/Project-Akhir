@@ -7,6 +7,10 @@ import {
   Link,
   IconButton,
   Button,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
   Menu,
   MenuButton,
   MenuList,
@@ -18,7 +22,7 @@ import {
   Divider,
   Icon,
 } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon, SearchIcon } from '@chakra-ui/icons';
 import Image from 'next/image'
 import logo from '../../asset/imgs/medicure-logo.png'
 import cartlogo from '../../asset/imgs/cart-logo.png'
@@ -26,15 +30,18 @@ import homelogo from '../../asset/imgs/home-logo.png'
 import uploadlogo from '../../asset/imgs/upload-presc.png'
 import paymentlogo from '../../asset/imgs/payment-confirm.png'
 import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
+import { Modal, Group } from '@mantine/core'
 
 export default function Navbar() {
+  const userSelector = useSelector((state)=> state.auth)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter()
 
   return (
     <>
       <Box bg={useColorModeValue('white')} px={4}>
-        <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
+        <Flex h={16} alignItems={'center'} justifyContent={'space-between'} alignContent={'center'}>
           <IconButton
             size={'md'}
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
@@ -45,25 +52,45 @@ export default function Navbar() {
           <Box>
             <Image src={logo} alt={"Medicure"} height={'42px'} width={"192px"} />
           </Box>
-          <HStack spacing={8} alignItems={'center'}>
+          <HStack spacing={8} alignItems={'center'} justifyContent={'space-between'}>
             <HStack
               as={'nav'}
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
-                <Box onClick={()=> router.push("/homepage")}>
-                <Image src={homelogo} boxSize='6' />
-                </Box>
-                <Button bg={"white"}> Home</Button>
-                <Button bg={"white"}><Image src={uploadlogo}/> Upload Prescription</Button>
-                <Button bg={"white"}><Image src={paymentlogo}/> Payment Confirmation</Button>
+                <Button bg={"white"} leftIcon={<Image src={homelogo} />}> Home</Button>
+                <Button bg={"white"} leftIcon={<Image src={uploadlogo} />}> Upload Prescription</Button>
+                <Button bg={"white"} leftIcon={<Image src={paymentlogo} />}> Payment Confirmation</Button>
+                <InputGroup>
+                <InputLeftElement color="gray.400">
+                  <SearchIcon />
+                </InputLeftElement>
+                <Input focusBorderColor="teal.400" 
+                placeholder="Search for medicine" />
+                <InputRightElement
+                  width="4.5rem"
+                  px={2}
+                  color={"white"}
+                  onClick={() => {
+                    console.log("search");
+                  }}
+                  bg="teal.400"
+                  _hover={{ bg: "teal.500" }}
+                  borderRightRadius="md"
+                >
+                  Search
+                </InputRightElement>
+              </InputGroup>
             </HStack>
           </HStack>
+          {userSelector.id ? (
+          <>
           <Flex alignItems={'center'} paddingLeft={"5px"}>
             <Link href='/cart'>
                 <Button bgColor={"white"} size={"sm"}>
                   <Image src={cartlogo}/>
                 </Button>
             </Link>
+
             <Menu>
               <MenuButton
                 as={Button}
@@ -86,6 +113,13 @@ export default function Navbar() {
               </MenuList>
             </Menu>
           </Flex>
+          </>
+          ) 
+          : (
+            <>
+            
+            </>
+          ) }
         </Flex>
 
         {isOpen ? (

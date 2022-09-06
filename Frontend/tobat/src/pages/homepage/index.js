@@ -6,9 +6,6 @@ import Image from 'next/image'
 import banner from '../../asset/imgs/medicure-banner.png'
 import Footer from "../../component/footer"
 
-
-
-
 export default function homepage(){
     
     const [isLoading, setIsLoading] = useState(false)
