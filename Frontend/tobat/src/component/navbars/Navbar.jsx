@@ -25,6 +25,7 @@ import {
 import { HamburgerIcon, CloseIcon, SearchIcon } from '@chakra-ui/icons';
 import Image from 'next/image'
 import logo from '../../asset/imgs/medicure-logo.png'
+import signinlogo from '../../asset/imgs/sign-in-logo.png'
 import cartlogo from '../../asset/imgs/cart-logo.png'
 import homelogo from '../../asset/imgs/home-logo.png'
 import uploadlogo from '../../asset/imgs/upload-presc.png'
@@ -32,11 +33,14 @@ import paymentlogo from '../../asset/imgs/payment-confirm.png'
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import { Modal, Group } from '@mantine/core'
+import LoginForm from '../auth/LoginForm';
+import { useState } from 'react'
 
 export default function Navbar() {
   const userSelector = useSelector((state)=> state.auth)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter()
+  const [opened, setOpened] = useState(false)
 
   return (
     <>
@@ -57,9 +61,21 @@ export default function Navbar() {
               as={'nav'}
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
-                <Button bg={"white"} leftIcon={<Image src={homelogo} />}> Home</Button>
-                <Button bg={"white"} leftIcon={<Image src={uploadlogo} />}> Upload Prescription</Button>
-                <Button bg={"white"} leftIcon={<Image src={paymentlogo} />}> Payment Confirmation</Button>
+                <Box display={"flex"}>
+                  <Image src={homelogo} alt=""/>
+                  Home
+                </Box>
+                <Box display={"flex"}>
+                  <Image src={uploadlogo} alt=""/>
+                  Upload Prescription
+                </Box>
+                <Box display={"flex"}>
+                  <Image src={paymentlogo} alt=""/>
+                  Payment Confirmation
+                </Box>
+                {/* <Button bg={"white"} leftIcon={<Image src={homelogo}  width={"50px"}/>}> Home</Button>
+                <Button bg={"white"} leftIcon={<Image src={uploadlogo}  width={"50px"} />}> Upload Prescription</Button>
+                <Button bg={"white"} leftIcon={<Image src={paymentlogo} width={"50px"}   />}> Payment Confirmation</Button> */}
                 <InputGroup>
                 <InputLeftElement color="gray.400">
                   <SearchIcon />
@@ -117,7 +133,18 @@ export default function Navbar() {
           ) 
           : (
             <>
-            
+            <Modal opened={opened}
+                onClose={()=> setOpened(false)}>
+                    <LoginForm></LoginForm>
+                </Modal>
+                <Group>
+                <Button bgColor="white" 
+                leftIcon={<Image src={signinlogo} />} 
+                onClick={()=> setOpened(true)}
+                borderColor={"teal"}>
+                  Sign In
+                </Button>
+                </Group>
             </>
           ) }
         </Flex>

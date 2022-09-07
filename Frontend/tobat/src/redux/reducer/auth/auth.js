@@ -2,7 +2,7 @@ import auth_types from "./type";
 
 const init_state = {
     id: 0,
-    username: "",
+    phoneNum: "",
     email: "",
     password: "",
     name: "",

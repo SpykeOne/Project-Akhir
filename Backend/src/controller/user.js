@@ -1,4 +1,5 @@
 const { User } = require("../lib/sequelize")
+const { Token } = require("../lib/sequelize")
 const { Op } = require("sequelize")
 const bcrypt = require("bcrypt")
 const {generateToken, verifyToken} = require("../lib/jwt")
@@ -61,15 +62,15 @@ const userController = {
     },
     register: async(req, res) => {
         try{
-            const {username, password, email, name, gender, dob} = req.body
+            const {phoneNum, password, email} = req.body
             const findUser = await User.findOne({
                 where: {
-                    [Op.or]: [{username},{email}]
+                    [Op.or]: [{phoneNum},{email}]
                 }
             })
 
             if(findUser){
-                throw new Error("Username/Email has been taken")
+                throw new Error("PhoneNumber/Email has been taken")
             }
 
             console.log(findUser)
@@ -77,17 +78,16 @@ const userController = {
             const hashedPassword = bcrypt.hashSync(password,5)
 
             const user = await User.create({
-                username,
+                phoneNum,
                 password: hashedPassword,
                 email,
-                name,
-                gender,
-                dob,
             })
+
+            await Token.create
 
             const token = await generateToken({ id: user.id, isEmailVerification: true })
 
-            const verToken = await SendVerification(user.id, email, username)
+            const verToken = await SendVerification(user.id, email, phoneNum)
 
         } catch (err) {
             console.log(err)
@@ -128,10 +128,11 @@ const userController = {
             console.log(req.body)
 
             await User.update({
-                username,
                 name,
                 email,
                 dob,
+                gender,
+                username,
             },
             {
                 where: {
@@ -177,6 +178,63 @@ const userController = {
             })
         }
     },
+    registerUserV2: async (req, res) => {
+    try {
+      const { username, password, full_name, email } = req.body;
+
+      const findUser = await Users.findOne({
+        where: {
+          [Op.or]: [{ username }, { email }],
+        },
+      });
+      console.log(findUser);
+
+      const hashedPassword = bcrypt.hashSync(password, 5);
+
+      const user = await Users.create({
+        username,
+        password: hashedPassword,
+        full_name,
+        email,
+      });
+
+      // Verification email
+      const verificationToken = nanoid(40);
+
+      await Token.create({
+        token: verificationToken,
+        id_user: user.id,
+        valid_until: moment().add(1, "hour"),
+        is_valid: true
+      })
+
+      const verificationLink =
+        `http://localhost:3000/verification/${verificationToken}`
+
+      const template = fs.readFileSync(__dirname + "/../templates/verify.html").toString()
+
+      const renderedTemplate = mustache.render(template, {
+        username,
+        verify_url: verificationLink,
+        full_name
+      })
+
+      await mailer({
+        to: email,
+        subject: "Verify your account!",
+        html: renderedTemplate
+      })
+
+      return res.status(201).json({
+        message: "Registered user"
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: "Server error"
+      })
+    }
+  },
 }
 
 module.exports = userController

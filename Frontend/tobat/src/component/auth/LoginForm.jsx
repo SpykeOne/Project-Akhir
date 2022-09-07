@@ -28,7 +28,7 @@ import * as Yup from "yup"
 import { userLogin } from "../../redux/action/user/userLogin";
 import { useEffect } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-
+import logo from '../../asset/imgs/medicure-logo.png'
 
   export default function LoginForm(){
     const [viewPassword, setViewPassword] = useState(false)
@@ -65,7 +65,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
       <HStack>
         <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
           <Stack align={"center"}>
-            <Image src width={"250px"} height={"70px"}></Image>
+            <Image src={logo} width={"250px"} height={"70px"}></Image>
             <Heading fontSize={"4xl"}>Sign in with your account</Heading>
             <Text fontSize={"lg"} color={"gray"}>
               {formik.values.usermail}
@@ -76,7 +76,6 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
             <Stack spacing={4}>
             <FormControl id="email" isInvalid={formik.errors.mailphone}>
                       <FormLabel>Email/PhoneNumber</FormLabel>
-
                       <Input
                         type="email"
                         onChange={(event) =>
@@ -123,12 +122,11 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
                       </Button>
                     </Stack>
             </Stack>
-            <Divider>Or</Divider>
           </Box>
           
           <Box rounded={"lg"} bg={useColorModeValue("white", "gray.700")} boxShadow={"lg"} p={8}>
             <Text>Don't have an account yet?
-              <Link onClick={() => router.push("/register")} colorScheme="facebook"> Register now!</Link>
+              <Link onClick={() => router.push("/signup")} colorScheme="facebook"> Register now!</Link>
               </Text>
           </Box>
         </Stack>
