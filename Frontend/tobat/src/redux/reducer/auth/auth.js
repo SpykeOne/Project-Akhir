@@ -3,6 +3,7 @@ import auth_types from "./type";
 const init_state = {
     id: 0,
     phoneNum: "",
+    username: "",
     email: "",
     password: "",
     name: "",
@@ -18,6 +19,7 @@ export function auth_reducer(state = init_state, action){
             ...state,
             id: action.payload?.id,
             phoneNum: action.payload.phoneNum,
+            username: action.payload.username,
             email: action.payload.email,
             password: action.payload.password,
             name: action.payload.name,

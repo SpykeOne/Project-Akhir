@@ -40,6 +40,7 @@ import {
     const formik = useFormik({
         initialValues: {
             phoneNum: '',
+            username: '',
             email: '',
             password: '',
             passwordConfirmation: '',
@@ -50,6 +51,19 @@ import {
             .required("Email must be filled")
             .matches(/@/, "Email must be an email")
             .matches(/.com/,"Email must be an email"),
+            username: Yup.string().required("Username must be filled")
+            .test("Unique Username", "Username already registered",
+            function(values){
+                return new Promise((resolve, reject) => {
+                    axiosInstance.get(`/user/${username.values}`).then((res)=>{
+                        resolve(true)
+                    })
+                    .catch((error)=>{
+                        if(error.response.data.content === "The username has already been taken")
+                        resolve(false)
+                    })
+                })
+            }),
             phoneNum: Yup.string().matches(phoneRegExp, 'Phone number is not valid')
             .required("Phone number must be filled"),
             password: Yup.string().required("Password must be filled")
@@ -120,11 +134,11 @@ import {
                     </FormControl>
 
                     <FormControl id="username" isRequired>
-                        <FormLabel>username</FormLabel>
+                        <FormLabel>Username</FormLabel>
                         <Input type="text" onChange={(e)=>{
                             formik.setFieldValue("username", e.target.value)
                         }}/>
-                        <FormHelperText>{formik.errors.phoneNum}</FormHelperText>
+                        <FormHelperText>{formik.errors.username}</FormHelperText>
                     </FormControl>
 
                     <FormControl id="email" isRequired>
@@ -157,7 +171,7 @@ import {
                     <FormControl>
                         <FormLabel>Confirm Password</FormLabel>
                         <InputGroup>
-                        <Input type="password" onChange={(e)=>{
+                        <Input type={showPassword ? 'text' : 'password'} onChange={(e)=>{
                             formik.setFieldValue("passwordConfirmation", e.target.value)
                         }}/>
                         <InputRightElement h={'full'}>

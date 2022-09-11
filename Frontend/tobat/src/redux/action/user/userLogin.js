@@ -10,7 +10,7 @@ export function userLogin(values, setSubmitting){
 
         try{
             let body = {
-                phoneNum: values.usermail,
+                username: values.usermail,
                 email: values.usermail,
                 password: values.password,
             }

@@ -4,6 +4,10 @@ const { Op } = require("sequelize")
 const bcrypt = require("bcrypt")
 const {generateToken, verifyToken} = require("../lib/jwt")
 const mailer = require("../lib/mailer")
+const mustache = require("mustache");
+const fs = require("fs")
+const { nanoid } = require("nanoid")
+const moment = require("moment")
 
 async function SendVerification(id, email, username){
     const verToken = await generateToken({id, isEmailVerification: true})
@@ -18,6 +22,25 @@ async function SendVerification(id, email, username){
     })
 
     return verToken
+}
+
+async function resetPassword(email){
+
+    const token = generateToken({email, isEmailVerification: true}, "600s")
+    const url_reset = process.env.LINK_RESET + token
+    const template = fs.readFileSync(__dirname + '/../templates/forgot.html').toString()
+    const renderedTemplate = mustache.render(template, {
+        email,
+        reset_password_url: url_reset,
+    })
+
+    await mailer({
+        to: email,
+        subject: "Reset Password",
+        html: renderedTemplate
+    })
+ 
+    return token
 }
 
 
@@ -60,12 +83,13 @@ const userController = {
             })
         }
     },
+
     register: async(req, res) => {
         try{
-            const {phoneNum, password, email} = req.body
+            const {username, password, email, phoneNum} = req.body
             const findUser = await User.findOne({
                 where: {
-                    [Op.or]: [{phoneNum},{email}]
+                    [Op.or]: [{username},{email}]
                 }
             })
 
@@ -78,16 +102,20 @@ const userController = {
             const hashedPassword = bcrypt.hashSync(password,5)
 
             const user = await User.create({
+                username,
                 phoneNum,
                 password: hashedPassword,
                 email,
             })
 
-            await Token.create
-
             const token = await generateToken({ id: user.id, isEmailVerification: true })
 
-            const verToken = await SendVerification(user.id, email, phoneNum)
+            const verToken = await SendVerification(user.id, email, username)
+
+            return res.status(200).json({
+                message: "new user has been created",
+                result: { user, token, verToken}
+            })
 
         } catch (err) {
             console.log(err)
@@ -96,6 +124,7 @@ const userController = {
             })
         }
     },
+
     stayLoggedIn: async(req, res) => {
         try{
             const { token } = req
@@ -121,6 +150,7 @@ const userController = {
             })
         }
     },
+
     editProfile: async (req, res) => {
         try{
             const {id_user} = req.params
@@ -154,6 +184,7 @@ const userController = {
             })
         }
     },
+
     editProfilePic: async (req, res) => {
         try{
             const {id_user} = req.params
@@ -178,11 +209,41 @@ const userController = {
             })
         }
     },
-    registerUserV2: async (req, res) => {
+    verifyUser: async (req,res) => {
+    
+        try{
+          const { vertoken } = req.params
+          console.log(vertoken)
+    
+          const isTokenVerified= verifyToken(vertoken, process.env.JWT_SECRET_KEY)
+     
+          if(!isTokenVerified || !isTokenVerified.isEmailVerification){
+            throw new Error("token is invalid")
+          }
+    
+          await User.update({ is_verified: true}, {where: {
+            id: isTokenVerified.id
+          }})
+    
+          return res.status(200).json({
+            message: "User is Verified",
+            success:  true
+          })
+    
+        }
+        catch(err) {
+          console.log(err);
+          res.status(400).json({
+            message: err.toString(),
+            success : false
+          })
+        }
+      },
+    registerV2: async (req, res) => {
     try {
-      const { username, password, full_name, email } = req.body;
+      const { username, password, phoneNum, email } = req.body;
 
-      const findUser = await Users.findOne({
+      const findUser = await User.findOne({
         where: {
           [Op.or]: [{ username }, { email }],
         },
@@ -191,10 +252,10 @@ const userController = {
 
       const hashedPassword = bcrypt.hashSync(password, 5);
 
-      const user = await Users.create({
+      const user = await User.create({
         username,
+        phoneNum,
         password: hashedPassword,
-        full_name,
         email,
       });
 
@@ -216,7 +277,6 @@ const userController = {
       const renderedTemplate = mustache.render(template, {
         username,
         verify_url: verificationLink,
-        full_name
       })
 
       await mailer({
@@ -232,6 +292,100 @@ const userController = {
       console.log(err)
       return res.status(500).json({
         message: "Server error"
+      })
+    }
+  },
+  loginV2: async (req, res) => {
+    try {
+      const { email, password, username } = req.body;
+
+      const user = await User.findOne({
+        where: {
+          [Op.or]: [{ username }, { email }],
+        },
+      });
+
+      if (!user) {
+        throw new Error("username/email/password not found");
+      }
+
+      const checkPass = await bcrypt.compareSync(password, user.password);
+      console.log(checkPass);
+      if (!checkPass) {
+        throw new Error("Wrong Password");
+      }
+      const token = nanoid(64);
+
+      // Create new session for logged in user
+      await Token.create({
+        id_user: user.id,
+        is_valid: true,
+        token: token,
+        valid_until: moment().add(1, "day")
+      })
+
+      delete user.dataValues.password;
+      delete user.dataValues.createdAt;
+      delete user.dataValues.updatedAt;
+
+      console.log(user);
+
+      res.status(200).json({
+        message: "login succeed",
+        result: { user, token },
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err.toString(),
+      });
+    }
+  },
+  sendResetPassword: async (req,res) => {
+    try{
+        const {email} = req.body
+
+        const token = generateToken({email: email, isEmailVerification: true})
+
+        const resetToken = await resetPassword(email)
+
+        return res.status(200).json({
+            message: "A link to reset your password has been sent to your email",
+            result: {token, resetToken}
+        })
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.toString()
+        })
+    }
+  },
+  resetPassword: async (req,res) => {
+    try{
+      const { resetToken } = req.params;
+      const { password } = req.body;
+      console.log(resetToken);
+      const isTokenVerified = verifyToken(resetToken, process.env.JWT_SECRET_KEY)
+
+      if(!isTokenVerified || !isTokenVerified.isEmailVerification){
+      throw new Error("token is invalid")
+      }
+      
+      const hashedPassword = bcrypt.hashSync(password, 5);
+
+      await User.update({password: hashedPassword,},
+        {where: {email: isTokenVerified.email}} );
+
+    return res.status(200).json({
+      message: "Password Changed",
+      success: true,
+    })
+    }
+    catch(err) {
+      console.log(err);
+      res.status(400).json({
+        message: err.toString()
       })
     }
   },

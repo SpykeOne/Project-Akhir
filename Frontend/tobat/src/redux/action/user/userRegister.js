@@ -9,6 +9,7 @@ export function userRegister(values, setSubmitting){
             let body = {
                 email: values.email,
                 phoneNum: values.phoneNum,
+                username: values.username,
                 password: values.password
             }
 

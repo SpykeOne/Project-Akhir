@@ -77,7 +77,6 @@ StockHistory.belongsTo(Unit, {foreignKey: "id_unit"})
 Product.hasMany(StockHistory, {foreignKey: "id_product"})
 StockHistory.belongsTo(Product, {foreignKey: "id_product"})
 
-
 module.exports = {
     sequelize,
     User,

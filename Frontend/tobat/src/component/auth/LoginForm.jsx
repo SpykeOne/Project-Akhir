@@ -29,6 +29,7 @@ import { userLogin } from "../../redux/action/user/userLogin";
 import { useEffect } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import logo from '../../asset/imgs/medicure-logo.png'
+import ForgotPasswordForm from "./ForgotPasswordForm";
 
   export default function LoginForm(){
     const [viewPassword, setViewPassword] = useState(false)
@@ -39,12 +40,12 @@ import logo from '../../asset/imgs/medicure-logo.png'
 
     const formik = useFormik({
       initialValues: {
-        phoneNum: "",
+        username: "",
         email: "",
         password:""
       },
       validationSchema: Yup.object().shape({
-        mailphone: Yup.string().required("Email/Phone Number needs to be filled"),
+        usermail: Yup.string().required("Email/Username needs to be filled"),
         password: Yup.string().required("Password needs to be filled"),
       }),
       validateOnChange: false,
@@ -75,7 +76,7 @@ import logo from '../../asset/imgs/medicure-logo.png'
           boxShadow={"lg"} p={8}>
             <Stack spacing={4}>
             <FormControl id="email" isInvalid={formik.errors.mailphone}>
-                      <FormLabel>Email/PhoneNumber</FormLabel>
+                      <FormLabel>Email/Username</FormLabel>
                       <Input
                         type="email"
                         onChange={(event) =>
@@ -106,9 +107,7 @@ import logo from '../../asset/imgs/medicure-logo.png'
                       <FormHelperText>{formik.errors.password}</FormHelperText>
                     </FormControl>
                     <Stack spacing={10}>
-                          <Link onClick={() => router.push("/forgotpassword")} color="facebook">
-                            Forgot your password?
-                          </Link>
+                      <ForgotPasswordForm></ForgotPasswordForm>
                       <Button
                         onClick={formik.handleSubmit}
                         bg={"blue.400"}

@@ -18,8 +18,22 @@ const upload = multer({
 const userController = require("../controller/user")
 const fileUploader = require("../lib/uploader")
 
-router.post("/login", userController.login)
+router.post("/login", userController.loginV2)
 
-router.post("/register", userController.register)
+router.post("/register", userController.registerV2)
+
+router.patch("/verify/:verToken", userController.verifyUser)
+
+router.post("/sendResetPassword", userController.sendResetPassword)
+
+router.post("/resetPassword/:resetToken", userController.resetPassword)
+
+router.get("/refresh-token", authorizedLoggedInUser, userController.stayLoggedIn)
+
+// router.post("/loginV2", userController.loginV2)
+
+// router.post("/registerV2", userController.registerV2)
+
+
 
 module.exports = router;
