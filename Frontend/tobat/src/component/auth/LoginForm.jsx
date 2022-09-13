@@ -16,7 +16,6 @@ import {
     InputRightAddon,
     FormHelperText,
     HStack,
-    Image,
     Divider
   } from "@chakra-ui/react";
 
@@ -30,6 +29,7 @@ import { useEffect } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import logo from '../../asset/imgs/medicure-logo.png'
 import ForgotPasswordForm from "./ForgotPasswordForm";
+import Image from "next/image";
 
   export default function LoginForm(){
     const [viewPassword, setViewPassword] = useState(false)
@@ -56,18 +56,24 @@ import ForgotPasswordForm from "./ForgotPasswordForm";
 
     useEffect(()=> {
       if (userSelector?.id) {
-        router.push("/homepage")
+        alert(userSelector.is_admin)
+        if(userSelector?.is_admin){
+          router.push("/dashboard")
+        }
+        else
+        {
+          router.push("/homepage");
+        }
       }
-    }, [userSelector.id])
-
+    }, [userSelector?.id])
 
     return(
       <>
-      <HStack>
-        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+      {/* <HStack> */}
+        {/* <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}> */}
           <Stack align={"center"}>
-            <Image src={logo} width={"250px"} height={"70px"}></Image>
-            <Heading fontSize={"4xl"}>Sign in with your account</Heading>
+            <Image src={logo} height={'42px'} width={"192px"}></Image>
+            <Heading fontSize={"4xl"} alignSelf={"center"}>Welcome</Heading>
             <Text fontSize={"lg"} color={"gray"}>
               {formik.values.usermail}
             </Text>
@@ -128,8 +134,8 @@ import ForgotPasswordForm from "./ForgotPasswordForm";
               <Link onClick={() => router.push("/signup")} colorScheme="facebook"> Register now!</Link>
               </Text>
           </Box>
-        </Stack>
-      </HStack>
+        {/* </Stack> */}
+      {/* </HStack> */}
       </>
     )
 

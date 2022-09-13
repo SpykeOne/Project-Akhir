@@ -31,16 +31,33 @@ import homelogo from '../../asset/imgs/home-logo.png'
 import uploadlogo from '../../asset/imgs/upload-presc.png'
 import paymentlogo from '../../asset/imgs/payment-confirm.png'
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Group } from '@mantine/core'
 import LoginForm from '../auth/LoginForm';
 import { useState } from 'react'
+import jsCookie from 'js-cookie'
+import auth_types from '../../redux/reducer/auth/type';
+import Router from 'next/router';
+
+const dispatch = useDispatch
+
+function Logout() {
+  jsCookie.remove("auth_token");
+
+  dispatch({
+    type: auth_types.AUTH_LOGOUT
+  })
+
+    Router.push("/homepage")
+}
 
 export default function Navbar() {
   const userSelector = useSelector((state)=> state.auth)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter()
   const [opened, setOpened] = useState(false)
+
+
 
   return (
     <>
@@ -59,19 +76,25 @@ export default function Navbar() {
           <HStack spacing={8} alignItems={'center'} justifyContent={'space-between'}>
             <HStack
               as={'nav'}
-              spacing={4}
+              spacing={8}
               display={{ base: 'none', md: 'flex' }}>
                 <Box display={"flex"}>
-                  <Image src={homelogo} alt=""/>
+                  <Image src={homelogo} width={"110px"} alt=""/>
+                  <Button bgColor={"white"} onClick={() => Router.push("/homepage")}>
                   Home
+                  </Button>
                 </Box>
-                <Box display={"flex"}>
+                <Box display={"flex"} >
                   <Image src={uploadlogo} alt=""/>
+                  <Button bgColor={"white"} >
                   Upload Prescription
+                  </Button>
                 </Box>
                 <Box display={"flex"}>
                   <Image src={paymentlogo} alt=""/>
+                  <Button bgColor={"white"}>
                   Payment Confirmation
+                  </Button>
                 </Box>
                 {/* <Button bg={"white"} leftIcon={<Image src={homelogo}  width={"50px"}/>}> Home</Button>
                 <Button bg={"white"} leftIcon={<Image src={uploadlogo}  width={"50px"} />}> Upload Prescription</Button>
@@ -125,7 +148,7 @@ export default function Navbar() {
                 <MenuItem >My Profile</MenuItem>
                 <MenuItem >Transaction</MenuItem>
                 <MenuItem >Help & Support</MenuItem>
-                <MenuItem >Logout</MenuItem>
+                <MenuItem onClick={() => Logout()} >Logout</MenuItem>
               </MenuList>
             </Menu>
           </Flex>

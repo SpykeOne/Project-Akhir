@@ -4,7 +4,6 @@ import Head from "next/head"
 import Navbar from "../../component/navbars/Navbar"
 import Image from 'next/image'
 import banner from '../../asset/imgs/medicure-banner.png'
-import Footer from "../../component/footer"
 
 export default function homepage(){
     
