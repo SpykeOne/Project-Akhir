@@ -38,8 +38,8 @@ export default function dashboard(){
                 <title>Medicure</title>
             </Head>
 
-            <Flex>
-            {/* <AdminNav></AdminNav> */}
+            <Flex flexDir={"column"}>
+            <AdminNav></AdminNav>
 
             <Sidebar></Sidebar>
             </Flex>

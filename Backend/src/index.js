@@ -6,8 +6,9 @@ const bodyParser = require("body-parser")
 dotenv.config()
 
 const PORT = process.env.PORT
-const {sequelize} = require("./lib/sequelize")
+const { sequelize } = require("./lib/sequelize")
 const userController = require("./routes/user")
+const categoryController = require("./routes/category")
 
 const app = express()
 app.use(bodyParser.urlencoded({extended: true}))
@@ -15,13 +16,14 @@ app.use(bodyParser.urlencoded({extended: true}))
 //command this code after making new model.
 // sequelize.sync({ alter: true })
 
-app.use(bodyParser.urlencoded({ extended : true  }))
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended : true  }))
 
 app.use(cors())
 app.use(express.json())
 
 app.use("/user", userController)
+app.use("/categories", categoryController)
 
 app.get("/", (req, res) => {
     res.send("API is running")

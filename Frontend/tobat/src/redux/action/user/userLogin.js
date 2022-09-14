@@ -33,7 +33,9 @@ export function userLogin(values, setSubmitting){
             })
             
             setSubmitting(false)
+            
         } catch (err) {
+
             console.log(err)
             alert("Username, Email, or Password is wrong")
 

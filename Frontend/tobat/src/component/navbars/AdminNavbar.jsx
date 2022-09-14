@@ -21,6 +21,8 @@ import {
   Stack,
   Divider,
   Icon,
+  Text,
+  VStack
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, SearchIcon } from '@chakra-ui/icons';
 import Image from 'next/image'
@@ -35,12 +37,27 @@ import { useSelector } from 'react-redux';
 import { Modal, Group } from '@mantine/core'
 import LoginForm from '../auth/LoginForm';
 import { useState } from 'react'
+import { useDispatch } from 'react-redux';
+import jsCookie from 'js-cookie'
+import auth_types from '../../redux/reducer/auth/type';
 
 export default function AdminNav() {
+  const dispatch = useDispatch();
   const userSelector = useSelector((state)=> state.auth)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter()
   const [opened, setOpened] = useState(false)
+
+  function Logout() {
+
+    jsCookie.remove("auth_token");
+
+    dispatch({
+      type: auth_types.AUTH_LOGOUT
+    })
+
+      router.push("/homepage")
+  }
 
   return (
     <>
@@ -83,50 +100,35 @@ export default function AdminNav() {
               </InputGroup>
             </HStack>
           </HStack>
-          {userSelector.id ? (
-          <>
-          <Flex alignItems={'center'} paddingLeft={"5px"}>
-            <Menu>
-              <MenuButton
-                as={Button}
-                rounded={'full'}
-                variant={'link'}
-                cursor={'pointer'}
-                minW={0}>
-                <Avatar
-                  size={'sm'}
-                  src={
-                    userSelector.profile_pic
-                  }
-                />
-              </MenuButton>
-              <MenuList align={"center"}>
-                <MenuItem >My Profile</MenuItem>
-                <MenuItem >Transaction</MenuItem>
-                <MenuItem >Help & Support</MenuItem>
-                <MenuItem >Logout</MenuItem>
-              </MenuList>
-            </Menu>
-            Hello, Admin
+
+          <Flex align="center">
+            <HStack>
+              <Icon></Icon>
+              <Divider type='solid' orientation='vertical' />
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  rounded={'full'}
+                  variant={'link'}
+                  cursor={'pointer'}
+                  minW={0}>
+                  <Avatar
+                    size={'sm'}
+                    src={
+                      userSelector.profile_pic
+                    }
+                  />
+                </MenuButton>
+                <MenuList align={"center"}>
+                  <MenuItem >My Profile</MenuItem>
+                  <MenuItem >Transaction</MenuItem>
+                  <MenuItem >Help & Support</MenuItem>
+                  <MenuItem onClick={() => Logout()} >Logout</MenuItem>
+                </MenuList>
+              </Menu>
+              <Text color="black" as='b'>{userSelector.username}</Text>
+            </HStack>
           </Flex>
-          </>
-          ) 
-          : (
-            <>
-            <Modal opened={opened}
-                onClose={()=> setOpened(false)}>
-                    <LoginForm></LoginForm>
-                </Modal>
-                <Group>
-                <Button bgColor="white" 
-                leftIcon={<Image src={signinlogo} />} 
-                onClick={()=> setOpened(true)}
-                borderColor={"teal"}>
-                  Sign In
-                </Button>
-                </Group>
-            </>
-          ) }
         </Flex>
 
         {isOpen ? (

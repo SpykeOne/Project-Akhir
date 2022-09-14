@@ -24,12 +24,17 @@ import { BiError } from "react-icons/bi"
     const [verified, setVerified] = useState(false)
 
     const router = useRouter()
-    const { verToken } = router.query 
+    const {verToken} = router.query
 
     useEffect(()=>{
+
       async function updateVerif(){
+        console.log("eror di update verif")
+
         console.log(verToken)
-        const res = await axiosInstance.patch("/users/verify/" + verToken )
+
+        const res = await axiosInstance.patch("/user/verify/" + verToken )
+
         if(res.data){
           const success = res.data.success
           console.log(success)

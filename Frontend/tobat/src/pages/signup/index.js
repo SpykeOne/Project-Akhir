@@ -12,7 +12,7 @@ export default function signup(){
     useEffect(()=>{
         if(userSelector?.id){
             setIsLoading(false)
-            router.push("/homepage")
+            router.push("/login")
         }
         else{
             setIsLoading(false)

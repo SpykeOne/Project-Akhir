@@ -10,7 +10,8 @@ const { nanoid } = require("nanoid")
 const moment = require("moment")
 
 async function SendVerification(id, email, username){
-    const verToken = await generateToken({id, isEmailVerification: true})
+
+    const verToken = await generateToken({id, isEmailVerification: true}, "600s")
     const url_verify = process.env.LINK_VERIFY + verToken
 
     await mailer({
@@ -24,25 +25,42 @@ async function SendVerification(id, email, username){
     return verToken
 }
 
-async function resetPassword(email){
+async function resetPassword(email, username){
 
     const token = generateToken({email, isEmailVerification: true}, "600s")
     const url_reset = process.env.LINK_RESET + token
-    const template = fs.readFileSync(__dirname + '/../templates/forgot.html').toString()
-    const renderedTemplate = mustache.render(template, {
-        email,
-        reset_password_url: url_reset,
-    })
 
-    await mailer({
-        to: email,
-        subject: "Reset Password",
-        html: renderedTemplate
+    await mailer ({
+      to: email,
+      subject: "Hi " + username + " your reset password submission has been accepted",
+      html: `<div> <h1> You can now reset your password </h1> </div>
+      <div> Please click the button below to continue <div>
+      <div> <button href="${url_reset}"> Reset Password </button>`
     })
  
     return token
 }
 
+<<<<<<< Updated upstream
+=======
+// async function resetPasswordV2(id, email, username){
+
+//   const token = await generateToken({id, isEmailVerification : true}, "300s")
+
+//   const url_reset = process.env.LINK_RESET + token
+
+//   await mailer ({
+//     to: email,
+//     subject: "Hi " + username + " your reset password submission has been accepted",
+//     html: `<div> <h1> You can now reset your password </h1> </div>
+//     <div> Please click the button below to continue <div>
+//     <div> <button href="${url_reset}"> Reset Password </button>`
+//   })
+
+
+//   return token
+// }
+>>>>>>> Stashed changes
 
 const userController = {
     login: async (req, res) => {
@@ -60,7 +78,7 @@ const userController = {
             }
 
             const checkPw = await bcrypt.compareSync(password, user.password)
-            console.log(checkPw)
+            // console.log("ini yg undefined")
 
             if(!checkPw){
                 throw new Error("Password is incorrect")
@@ -70,7 +88,7 @@ const userController = {
             delete user.dataValues.createdAt
             delete user.dataValues.updatedAt
 
-            console.log(user)
+            // console.log(user)
 
             res.status(200).json({
                 message: "Login succeed",
@@ -202,6 +220,7 @@ const userController = {
             return res.status(200).json ({
                 message: "Profile Picture Updated"
             })
+
         } catch(err){
             console.log(err)
             return res.status(500).json({
@@ -213,6 +232,7 @@ const userController = {
     
         try{
           const { vertoken } = req.params
+
           console.log(vertoken)
     
           const isTokenVerified= verifyToken(vertoken, process.env.JWT_SECRET_KEY)
@@ -295,6 +315,7 @@ const userController = {
       })
     }
   },
+
   loginV2: async (req, res) => {
     try {
       const { email, password, username } = req.body;
@@ -341,13 +362,14 @@ const userController = {
       });
     }
   },
+
   sendResetPassword: async (req,res) => {
     try{
-        const {email} = req.body
+        const {email, username} = req.body
 
         const token = generateToken({email: email, isEmailVerification: true})
 
-        const resetToken = await resetPassword(email)
+        const resetToken = await resetPassword(email, username)
 
         return res.status(200).json({
             message: "A link to reset your password has been sent to your email",
@@ -389,6 +411,34 @@ const userController = {
       })
     }
   },
+
+  resendVerification: async (req, res) => {
+    try{
+
+      const {id, username, email} = req.body
+
+      console.log (req.body)
+
+      const token = generateToken ({id: id, username: username, email: email})
+      const verToken = SendVerification(id, email, username)
+
+      console.log(verToken)
+
+      return res.status(200).json({
+        message: "Verification request has been sent email",
+        result: [token, verToken]
+      })
+
+    } catch (err) {
+      
+      console.log(err)
+      res.status(400).json({
+        message: err.toString(),
+        success: false
+      })
+    }
+  }
+
 }
 
 module.exports = userController

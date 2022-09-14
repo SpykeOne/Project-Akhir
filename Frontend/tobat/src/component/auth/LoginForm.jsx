@@ -56,20 +56,20 @@ import Image from "next/image";
 
     useEffect(()=> {
       if (userSelector?.id) {
-        alert(userSelector.is_admin)
-        if(userSelector?.is_admin){
+        if(userSelector?.is_admin === true){
           router.push("/dashboard")
         }
         else
         {
           router.push("/homepage");
+          console.log(userSelector)
         }
       }
     }, [userSelector?.id])
 
     return(
       <>
-      {/* <HStack> */}
+      {/* <HStack> */}  
         {/* <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}> */}
           <Stack align={"center"}>
             <Image src={logo} height={'42px'} width={"192px"}></Image>
