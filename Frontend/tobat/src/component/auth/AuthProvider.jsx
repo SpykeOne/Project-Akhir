@@ -1,4 +1,4 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import jsCookie from 'js-cookie'
 import auth_types from '../../redux/reducer/auth/type'
@@ -6,6 +6,7 @@ import { axiosInstance } from '../../lib/hoc/api'
 
 function AuthProvider({children}) {
     const [isAuthChecked, setIsAuthChecked] = useState(false)
+    const userSelector = useSelector((state)=> state.auth)
 
     const dispatch = useDispatch()
 

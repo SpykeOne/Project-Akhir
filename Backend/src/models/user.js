@@ -4,6 +4,13 @@ const phoneValidation = /\d{3}-\d{3}-\d{4}/
 
 const User = (sequelize) => {
     return sequelize.define("User", {
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                isEmail: true
+            },
+        },    
         phoneNum: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -13,28 +20,25 @@ const User = (sequelize) => {
                 }
             }
         },
-        email: {
+        username: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                isEmail: true
-            },
-        },    
+            allowNull: true,
+          },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
           },
         name: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         gender: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         dob: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         profile_picture:  {
             type: DataTypes.STRING,

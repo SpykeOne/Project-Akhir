@@ -10,7 +10,7 @@ export function userLogin(values, setSubmitting){
 
         try{
             let body = {
-                phoneNum: values.usermail,
+                username: values.usermail,
                 email: values.usermail,
                 password: values.password,
             }
@@ -33,12 +33,14 @@ export function userLogin(values, setSubmitting){
             })
             
             setSubmitting(false)
+            
         } catch (err) {
+
             console.log(err)
             alert("Username, Email, or Password is wrong")
 
             setSubmitting(false)
         }
     }
-
+    
 }

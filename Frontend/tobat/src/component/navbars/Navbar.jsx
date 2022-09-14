@@ -21,22 +21,85 @@ import {
   Stack,
   Divider,
   Icon,
+  MenuGroup,
+  Toast,
+  useToast,
+  Text
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, SearchIcon } from '@chakra-ui/icons';
 import Image from 'next/image'
 import logo from '../../asset/imgs/medicure-logo.png'
+import signinlogo from '../../asset/imgs/sign-in-logo.png'
 import cartlogo from '../../asset/imgs/cart-logo.png'
 import homelogo from '../../asset/imgs/home-logo.png'
 import uploadlogo from '../../asset/imgs/upload-presc.png'
 import paymentlogo from '../../asset/imgs/payment-confirm.png'
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Group } from '@mantine/core'
+import LoginForm from '../auth/LoginForm';
+import { useState } from 'react'
+import jsCookie from 'js-cookie'
+import auth_types from '../../redux/reducer/auth/type';
+import Router from 'next/router';
+import axios from 'axios';
+import { axiosInstance } from '../../lib/hoc/api';
+
+
+
 
 export default function Navbar() {
+
+  const toast = useToast()
+  const dispatch = useDispatch();
   const userSelector = useSelector((state)=> state.auth)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter()
+  const [opened, setOpened] = useState(false)
+  
+      function Logout() {
+
+      jsCookie.remove("auth_token");
+
+      dispatch({
+        type: auth_types.AUTH_LOGOUT
+      })
+
+        Router.push("/login")
+    }
+
+    function resendVerification(){
+      try{
+        
+        let body = {
+          id: userSelector.id,
+          username: userSelector.username,
+          email: userSelector.email
+        }
+        
+        axiosInstance.post("/resendVerification", qs.stringify(body))
+        
+        console.log(body)
+
+        toast({
+          title: "Verification email sent",
+          description: "A new verification email has been sent to your email",
+          status: "success",
+          isClosable: true
+        })
+
+      } catch (err) {
+        
+        console.log(err)
+        toast({
+          title: "Error",
+          description: "There seems to be an error sending a new verification email",
+          status: "error",
+          isClosable: true
+        })
+      }
+    }
+
 
   return (
     <>
@@ -55,11 +118,29 @@ export default function Navbar() {
           <HStack spacing={8} alignItems={'center'} justifyContent={'space-between'}>
             <HStack
               as={'nav'}
-              spacing={4}
+              spacing={8}
               display={{ base: 'none', md: 'flex' }}>
-                <Button bg={"white"} leftIcon={<Image src={homelogo} />}> Home</Button>
-                <Button bg={"white"} leftIcon={<Image src={uploadlogo} />}> Upload Prescription</Button>
-                <Button bg={"white"} leftIcon={<Image src={paymentlogo} />}> Payment Confirmation</Button>
+                <Box display={"flex"}>
+                  <Image src={homelogo} width={"110px"} alt=""/>
+                  <Button bgColor={"white"} onClick={() => Router.push("/homepage")}>
+                  Home
+                  </Button>
+                </Box>
+                <Box display={"flex"} >
+                  <Image src={uploadlogo} alt=""/>
+                  <Button bgColor={"white"} >
+                  Upload Prescription
+                  </Button>
+                </Box>
+                <Box display={"flex"}>
+                  <Image src={paymentlogo} alt=""/>
+                  <Button bgColor={"white"}>
+                  Payment Confirmation
+                  </Button>
+                </Box>
+                {/* <Button bg={"white"} leftIcon={<Image src={homelogo}  width={"50px"}/>}> Home</Button>
+                <Button bg={"white"} leftIcon={<Image src={uploadlogo}  width={"50px"} />}> Upload Prescription</Button>
+                <Button bg={"white"} leftIcon={<Image src={paymentlogo} width={"50px"}   />}> Payment Confirmation</Button> */}
                 <InputGroup>
                 <InputLeftElement color="gray.400">
                   <SearchIcon />
@@ -84,13 +165,25 @@ export default function Navbar() {
           </HStack>
           {userSelector.id ? (
           <>
-          <Flex alignItems={'center'} paddingLeft={"5px"}>
-            <Link href='/cart'>
-                <Button bgColor={"white"} size={"sm"}>
-                  <Image src={cartlogo}/>
-                </Button>
-            </Link>
+          <Flex alignItems={'center'} paddingLeft={"5px"} justifyContent="space-between">
 
+            {userSelector.is_verified ? (
+              <>
+                <Link href='/cart'>
+                    <Button bgColor={"white"} size={"sm"}>
+                      <Image src={cartlogo}/>
+                    </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+              <HStack>
+                <Button bgColor="white" onClick={()=> resendVerification()}>
+                  Verify
+                </Button>
+              </HStack>
+              </>
+            )}
             <Menu>
               <MenuButton
                 as={Button}
@@ -106,10 +199,13 @@ export default function Navbar() {
                 />
               </MenuButton>
               <MenuList align={"center"}>
-                <MenuItem >My Profile</MenuItem>
+                <MenuGroup title={`Hello, ${userSelector.username}`}>
+                <MenuItem onClick={ () => router.push("/profile/" + userSelector.id)}>My Profile</MenuItem>
                 <MenuItem >Transaction</MenuItem>
+                </MenuGroup>
+                <MenuDivider/>
                 <MenuItem >Help & Support</MenuItem>
-                <MenuItem >Logout</MenuItem>
+                <MenuItem onClick={() => Logout()} >Logout</MenuItem>
               </MenuList>
             </Menu>
           </Flex>
@@ -117,7 +213,12 @@ export default function Navbar() {
           ) 
           : (
             <>
-            
+                <Button bgColor="white" 
+                leftIcon={<Image src={signinlogo} />} 
+                onClick={()=> router.push("/login")}
+                borderColor={"teal"}>
+                  Sign In
+                </Button>
             </>
           ) }
         </Flex>

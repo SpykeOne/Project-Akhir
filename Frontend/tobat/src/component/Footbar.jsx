@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { FaTwitter, FaYoutube, FaInstagram } from 'react-icons/fa';
 
-export default function Footer() {
+export default function Footbar() {
   return (
     <Box
       bg={useColorModeValue('gray.50', 'gray.900')}

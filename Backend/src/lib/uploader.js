@@ -4,7 +4,7 @@ const multer = require("multer")
 
 const fileUploader = ({
     destinationFolder = "",
-    prefix = "POST",
+    prefix = "PIC",
     fileType = "image"
 }) => {
     const storageConfig = multer.diskStorage({

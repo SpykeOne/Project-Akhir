@@ -16,7 +16,6 @@ import {
     InputRightAddon,
     FormHelperText,
     HStack,
-    Image,
     Divider
   } from "@chakra-ui/react";
 
@@ -28,7 +27,9 @@ import * as Yup from "yup"
 import { userLogin } from "../../redux/action/user/userLogin";
 import { useEffect } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-
+import logo from '../../asset/imgs/medicure-logo.png'
+import ForgotPasswordForm from "./ForgotPasswordForm";
+import Image from "next/image";
 
   export default function LoginForm(){
     const [viewPassword, setViewPassword] = useState(false)
@@ -39,12 +40,12 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
     const formik = useFormik({
       initialValues: {
-        phoneNum: "",
+        username: "",
         email: "",
         password:""
       },
       validationSchema: Yup.object().shape({
-        mailphone: Yup.string().required("Email/Phone Number needs to be filled"),
+        usermail: Yup.string().required("Email/Username needs to be filled"),
         password: Yup.string().required("Password needs to be filled"),
       }),
       validateOnChange: false,
@@ -55,18 +56,24 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
     useEffect(()=> {
       if (userSelector?.id) {
-        router.push("/homepage")
+        if(userSelector?.is_admin === true){
+          router.push("/dashboard")
+        }
+        else
+        {
+          router.push("/homepage");
+          console.log(userSelector)
+        }
       }
-    }, [userSelector.id])
-
+    }, [userSelector?.id])
 
     return(
       <>
-      <HStack>
-        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+      {/* <HStack> */}  
+        {/* <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}> */}
           <Stack align={"center"}>
-            <Image src width={"250px"} height={"70px"}></Image>
-            <Heading fontSize={"4xl"}>Sign in with your account</Heading>
+            <Image src={logo} height={'42px'} width={"192px"}></Image>
+            <Heading fontSize={"4xl"} alignSelf={"center"}>Welcome</Heading>
             <Text fontSize={"lg"} color={"gray"}>
               {formik.values.usermail}
             </Text>
@@ -75,8 +82,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
           boxShadow={"lg"} p={8}>
             <Stack spacing={4}>
             <FormControl id="email" isInvalid={formik.errors.mailphone}>
-                      <FormLabel>Email/PhoneNumber</FormLabel>
-
+                      <FormLabel>Email/Username</FormLabel>
                       <Input
                         type="email"
                         onChange={(event) =>
@@ -107,9 +113,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
                       <FormHelperText>{formik.errors.password}</FormHelperText>
                     </FormControl>
                     <Stack spacing={10}>
-                          <Link onClick={() => router.push("/forgotpassword")} color="facebook">
-                            Forgot your password?
-                          </Link>
+                      <ForgotPasswordForm></ForgotPasswordForm>
                       <Button
                         onClick={formik.handleSubmit}
                         bg={"blue.400"}
@@ -123,16 +127,15 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
                       </Button>
                     </Stack>
             </Stack>
-            <Divider>Or</Divider>
           </Box>
           
           <Box rounded={"lg"} bg={useColorModeValue("white", "gray.700")} boxShadow={"lg"} p={8}>
             <Text>Don't have an account yet?
-              <Link onClick={() => router.push("/register")} colorScheme="facebook"> Register now!</Link>
+              <Link onClick={() => router.push("/signup")} colorScheme="facebook"> Register now!</Link>
               </Text>
           </Box>
-        </Stack>
-      </HStack>
+        {/* </Stack> */}
+      {/* </HStack> */}
       </>
     )
 
