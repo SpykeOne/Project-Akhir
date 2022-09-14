@@ -19,6 +19,42 @@ async function SendVerification(id, email, username){
     return verToken
 }
 
+<<<<<<< Updated upstream
+=======
+async function resetPassword(email, username){
+
+    const token = generateToken({email, isEmailVerification: true}, "600s")
+    const url_reset = process.env.LINK_RESET + token
+
+    await mailer ({
+      to: email,
+      subject: "Hi " + username + " your reset password submission has been accepted",
+      html: `<div> <h1> You can now reset your password </h1> </div>
+      <div> Please click the button below to continue <div>
+      <div> <button href="${url_reset}"> Reset Password </button>`
+    })
+ 
+    return token
+}
+
+// async function resetPasswordV2(id, email, username){
+
+//   const token = await generateToken({id, isEmailVerification : true}, "300s")
+
+//   const url_reset = process.env.LINK_RESET + token
+
+//   await mailer ({
+//     to: email,
+//     subject: "Hi " + username + " your reset password submission has been accepted",
+//     html: `<div> <h1> You can now reset your password </h1> </div>
+//     <div> Please click the button below to continue <div>
+//     <div> <button href="${url_reset}"> Reset Password </button>`
+//   })
+
+
+//   return token
+// }
+>>>>>>> Stashed changes
 
 const userController = {
     login: async (req, res) => {
