@@ -43,23 +43,6 @@ async function resetPassword(email){
     return token
 }
 
-async function SendResetPassword(id, email, username){
-
-  const resetToken = await generateToken({id, isEmailVerification : true}, "300s")
-
-  const url_reset = process.env.LINK_RESETP + resetToken
-
-  await mailer ({
-    to:email,
-    subject: "Hi " + username + " your reset password submission has been accepted",
-    html: `<div> <h1> You can now reset your password </h1> </div>
-    <div> Please click the button below to continue <div>
-    <div> <button href="${url_reset}"> Reset Password </button>`
-  })
-
-
-  return resetToken
-}
 
 const userController = {
     login: async (req, res) => {
@@ -125,7 +108,7 @@ const userController = {
                 email,
             })
 
-            const token = generateToken({ id: user.id, isEmailVerification: true })
+            const token = await generateToken({ id: user.id, isEmailVerification: true })
 
             const verToken = await SendVerification(user.id, email, username)
 
@@ -145,8 +128,6 @@ const userController = {
     stayLoggedIn: async(req, res) => {
         try{
             const { token } = req
-
-            // console.log(token)
 
             const renewedToken = generateToken({id: token.id, password: token.password})
 
@@ -228,7 +209,6 @@ const userController = {
             })
         }
     },
-
     verifyUser: async (req,res) => {
     
         try{
@@ -259,7 +239,6 @@ const userController = {
           })
         }
       },
-
     registerV2: async (req, res) => {
     try {
       const { username, password, phoneNum, email } = req.body;
@@ -281,7 +260,7 @@ const userController = {
       });
 
       // Verification email
-      const verificationToken = generateToken({id: user.id, isEmailVerification : true});
+      const verificationToken = nanoid(40);
 
       await Token.create({
         token: verificationToken,
@@ -330,13 +309,12 @@ const userController = {
         throw new Error("username/email/password not found");
       }
 
-      const checkPass = bcrypt.compareSync(password, user.password);
+      const checkPass = await bcrypt.compareSync(password, user.password);
       console.log(checkPass);
       if (!checkPass) {
         throw new Error("Wrong Password");
       }
-
-      const token = generateToken({id:user.id});
+      const token = nanoid(64);
 
       // Create new session for logged in user
       await Token.create({
@@ -383,7 +361,6 @@ const userController = {
         })
     }
   },
-  
   resetPassword: async (req,res) => {
     try{
       const { resetToken } = req.params;

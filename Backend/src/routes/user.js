@@ -1,26 +1,20 @@
 const express = require("express")
 const router = express.Router()
-const multer = require("multer")
 const {authorizedLoggedInUser} = require("../middleware/authMiddleware")
-
-const upload = multer({
-    limits: {
-        fileSize: 1000000000000000, //Byte
-    },
-    fileFilter(req, file, cb) {
-        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
-            return cb(new Error("File must be PNG, JPG, JPEG"), false)
-        }
-        cb(null,true)
-    },
-})
-
 const userController = require("../controller/user")
 const fileUploader = require("../lib/uploader")
 
-router.post("/login", userController.login)
+router.post("/login", userController.loginV2)
 
-router.post("/register", userController.register)
+router.post("/register", userController.registerV2)
+
+router.patch("/:id", userController.editProfile)
+
+router.patch("/uploadprofpic/:id", fileUploader({
+    destinationFolder: "profile_pict",
+    fileType: "image",
+    prefix: "PP",
+}).single("image"), userController.editProfilePic)
 
 router.patch("/verify/:verToken", userController.verifyUser)
 
