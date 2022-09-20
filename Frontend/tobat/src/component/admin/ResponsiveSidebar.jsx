@@ -5,7 +5,8 @@ import {
     IconButton,
     Divider,
     Avatar,
-    Heading
+    Heading,
+    Link
 } from '@chakra-ui/react'
 import {
     FiMenu,
@@ -22,6 +23,7 @@ import { IoPawOutline } from 'react-icons/io5'
 import NavItem from './NavItem'
 import { useRouter } from 'next/router'
 import { useSelector } from 'react-redux'
+import NextLink from "next/link"
 
 export default function Sidebar() {
     const [navSize, changeNavSize] = useState("large")
@@ -60,10 +62,30 @@ export default function Sidebar() {
                             changeNavSize("small")
                     }}
                 />
-                <NavItem navSize={navSize} icon={FiHome} title="Dashboard" description="This is the description for the dashboard." />
-                <NavItem navSize={navSize} icon={FiBox} title="Products" />
-                <NavItem navSize={navSize} icon={FiUser} title="Orders" />
-                <NavItem navSize={navSize} icon={FiActivity} title="Sales Report" />
+
+                <NextLink href={"/homepage"}>
+                    <Link>
+                        <NavItem navSize={navSize} icon={FiHome} title="Dashboard" />
+                    </Link>
+                </NextLink>
+
+                <NextLink href={"/adminproducts"}>
+                    <Link>
+                        <NavItem navSize={navSize} icon={FiBox} title="Products" />
+                    </Link>
+                </NextLink>
+
+                <NextLink href={"/adminorders"}>
+                    <Link>
+                        <NavItem navSize={navSize} icon={FiUser} title="Orders" />
+                    </Link>
+                </NextLink>
+
+                <NextLink href={"/adminsales"}>
+                    <Link>
+                        <NavItem navSize={navSize} icon={FiActivity} title="Sales Report" />
+                    </Link>
+                </NextLink>
             </Flex>
 
             {/* <Flex

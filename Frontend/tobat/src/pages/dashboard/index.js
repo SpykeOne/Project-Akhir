@@ -40,8 +40,9 @@ export default function dashboard(){
 
             <Flex flexDir={"column"}>
             <AdminNav></AdminNav>
-
-            <Sidebar></Sidebar>
+                <Box>
+                    <Sidebar/>
+                </Box>
             </Flex>
 
 

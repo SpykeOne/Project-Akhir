@@ -16,6 +16,7 @@ function AuthProvider({children}) {
             const userToken = jsCookie.get("auth_token")
 
             if(userToken){
+                alert(userToken)
                 const userResponse = await axiosInstance.get("/user/refresh-token",{
                     headers:{
                         authorization: userToken

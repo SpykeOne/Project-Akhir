@@ -5,9 +5,9 @@ const userController = require("../controller/user")
 
 const fileUploader = require("../lib/uploader")
 
-router.post("/login", userController.loginV2)
+router.post("/login", userController.login)
 
-router.post("/register", userController.registerV2)
+router.post("/register", userController.register)
 
 router.patch("/:id", userController.editProfile)
 

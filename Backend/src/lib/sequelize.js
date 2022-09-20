@@ -38,7 +38,7 @@ Token.belongsTo(User, {foreignKey: "id_user"})
 
 User.hasMany(Payment, {foreignKey: "id_user"})
 Payment.belongsTo(User, {foreignKey: "id_user"})
-Payment.belongsTo(Order, {foreignKey: "id_payment"})
+Payment.hasOne(Order, {foreignKey: "id_payment"})
 Order.belongsTo(Payment, {foreignKey: "id_payment"})
 
 User.hasMany(Prescription, {foreignKey: "id_user"})
@@ -46,7 +46,7 @@ Prescription.belongsTo(User, {foreignKey: "id_user"})
 Prescription.belongsTo(Order, {foreignKey: "id_prescription"})
 Order.belongsTo(Prescription, {foreignKey: "id_prescription"})
 
-OrderStatus.belongsTo(Order, {foreignKey: "id_os"})
+OrderStatus.hasOne(Order, {foreignKey: "id_os"})
 Order.belongsTo(OrderStatus, {foreignKey:"id_os"})
 
 Product.hasMany(OrderItem, {foreignKey: "id_product"})
@@ -57,7 +57,7 @@ Order.hasMany(OrderItem, {foreignKey: "id_order"})
 Product.hasMany(ProductImage, {foreignKey: "id_product"})
 ProductImage.belongsTo(Product, {foreignKey: "id_product"})
 
-Product.belongsTo(ProductDescription, {foreignKey: "id_product"})
+Product.hasOne(ProductDescription, {foreignKey: "id_product"})
 ProductDescription.belongsTo(Product, {foreignKey: "id_product"})
 
 Product.hasMany(ProductCategory, {foreignKey: "id_product"})

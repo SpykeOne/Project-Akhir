@@ -6,6 +6,8 @@ const categoryController = {
     getAllCategory: async (req, res) => {
         try{
             const findCategory = await Category.findAll({
+                limit: 10,
+                offset: 0,
                 order:[['createdAt', 'ASC']]
             })
             return res.status(200).json({
@@ -27,11 +29,12 @@ const categoryController = {
 
             await Category.create({
                 name,
-                category_img: `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH}`
+                category_img: `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_CATIMG}/${filename}`
             })
             return res.status(200).json({
                 message: "New category added"
             })
+
         } catch (err) {
             console.log(err)
             res.status(500).json({
@@ -68,18 +71,18 @@ const categoryController = {
         try{
             const { id } = req.params;
 
-            const { name } = req.body
+            const { name, category_img } = req.body
 
             const { filename } = req.file
 
             await Category.update(
                 {
                     name,
-                    category_img
+                    category_img: `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_CATEGORYIMG}/${filename}`
                 },
                 {
                     where: {
-                        id,
+                        id: id,
                     },
                 }
             );

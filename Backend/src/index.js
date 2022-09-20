@@ -25,6 +25,9 @@ app.use(express.json())
 app.use("/user", userController)
 app.use("/categories", categoryController)
 
+app.use("/category_img", express.static(`${__dirname}/public/category_img`))
+app.use("/product_img", express.static(`${__dirname}/public/product_img`))
+
 app.get("/", (req, res) => {
     res.send("API is running")
 })
