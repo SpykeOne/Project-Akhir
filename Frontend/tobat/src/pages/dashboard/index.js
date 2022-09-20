@@ -8,6 +8,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/router"
 import { useSelector } from "react-redux"
 import Sidebar from "../../component/admin/ResponsiveSidebar"
+import TableCategory from "../../component/admin/TableCategory"
 
 export default function dashboard(){
     
@@ -38,8 +39,8 @@ export default function dashboard(){
                 <title>Medicure</title>
             </Head>
 
-            <Flex flexDir={"column"}>
             <AdminNav></AdminNav>
+            <Flex flexDir={"column"}>
                 <Box>
                     <Sidebar/>
                 </Box>

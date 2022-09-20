@@ -10,11 +10,7 @@ const Product = (sequelize) => {
         bpom_code:{
             type: DataTypes.STRING
         },
-        default_amount:{
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        default_type:{
+        type:{
             type: DataTypes.STRING,
             allowNull: false
         }

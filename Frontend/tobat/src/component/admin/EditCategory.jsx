@@ -3,11 +3,21 @@ import { useFormik } from "formik"
 import { useState } from "react"
 import { useRef } from "react"
 import { axiosInstance } from "../../lib/hoc/api"
+import { 
+    Box,
+    Button, 
+    Flex, 
+    FormControl, 
+    FormLabel, 
+    Input, 
+    Stack 
+} 
+from "@chakra-ui/react";
 
 
-export default function EditCategory(props) {
+export default function EditCategoryForm(props) {
 
-    const {name, category_img, id} = props 
+    const {name, id} = props 
     const [selectedFile, setSelectedFile] = useState(null)
     const toast = useToast()
     const inputFileRef = useRef(null)
@@ -18,7 +28,7 @@ export default function EditCategory(props) {
 
     const formik = useFormik({
         initialValues:{
-            name: val.name
+            name: name
         },
         onSubmit: async() => {
             const formData = new FormData()
@@ -30,7 +40,7 @@ export default function EditCategory(props) {
             console.log(formData)
 
             try{
-                await axiosInstance.patch("/categories" + id, formData).then(()=>{
+                await axiosInstance.patch("/categories/" + id, formData).then(()=>{
 
                     toast({
                         title: "Category edited",
@@ -80,7 +90,7 @@ export default function EditCategory(props) {
 
                 <FormControl align={"center"}>
                     <Button colorScheme={"teal"}
-                    onClick={formik.handleSubmit}>
+                    onClick={() => formik.handleSubmit()}>
                         Update
                     </Button>
                 </FormControl>

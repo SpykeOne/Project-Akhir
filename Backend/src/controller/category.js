@@ -78,7 +78,7 @@ const categoryController = {
             await Category.update(
                 {
                     name,
-                    category_img: `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_CATEGORYIMG}/${filename}`
+                    category_img: `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_CATIMG}/${filename}`
                 },
                 {
                     where: {

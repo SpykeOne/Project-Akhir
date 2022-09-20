@@ -30,18 +30,21 @@ import { useState } from "react"
 import { useEffect } from "react"
 import { useToast } from "@chakra-ui/react"
 import AddCategoryForm from "./AddCategoryForm"
+import EditCategoryForm from "./EditCategory"
 
 
-export default function TableCategory () {
+export default function TableCategory (props) {
     
     const dispatch = useDispatch()
     const router = useRouter()
     const [opened, setOpened] = useState(false)
+    const [opened2, setOpened2] = useState(false)
     const date = moment(new Date()).format("LLLL")
     const toast = useToast()
     const renderData = useSelector((state) => state.category)
     const [listCategory, setListCategory] = useState([])
     const [loadData, setLoadData] = useState(1)
+    const {id, name, category_img} = props
 
     const fetchCategory = async () => {
         await axiosInstance.get("/categories").then((res)=>{
@@ -107,7 +110,7 @@ export default function TableCategory () {
     //             </Box>
     //     )
     // }
-    
+
     const renderCategoryTable = () => {
         return listCategory?.map((val, index) => {
             return (
@@ -120,7 +123,22 @@ export default function TableCategory () {
                         {val.name}
                     </Td>
                     <Td>
-                        <SettingsIcon></SettingsIcon>
+                        <Modal opened={opened2}
+                        onClose={() => setOpened2(false)}>
+                            <EditCategoryForm
+                            props={val}
+                            key={index}
+                            id={val?.id}
+                            name={val.name}
+                            category_img={val.filename}>
+                            </EditCategoryForm>
+                        </Modal>
+                        <Group>
+                            <Button 
+                            onClick={() => setOpened2(true)}>
+                            <SettingsIcon></SettingsIcon>
+                            </Button>
+                        </Group>
                     </Td>
                     <Td>
                         <Button>
@@ -198,7 +216,7 @@ export default function TableCategory () {
             {/* -----------TABLE CATEGORY---------- */}
             <TableContainer>
               <Table variant="striped">
-                <TableCaption>Imperial to metric conversion factors</TableCaption>
+                <TableCaption>List of Categories</TableCaption>
                 <Thead>
                   <Tr>
                     <Th>Id</Th>
